@@ -10,8 +10,10 @@
 #  user_id    :integer
 #
 
-FactoryBot.define do
-  factory :comment do
-    body {"this is a comment"}
-  end
+class Comment < ApplicationRecord
+    
+    validates :user_id, :photo_id, :body, presence: true
+    
+    belongs_to :user, :class_name => "User", :foreign_key => "user_id"
+    belongs_to :photo, :class_name => "Photo", :foreign_key => "photo_id"
 end

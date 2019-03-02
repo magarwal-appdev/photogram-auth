@@ -1,0 +1,217 @@
+<div class="container">
+    <div class="row">
+      <div class="col-md-8 offset-md-2">
+        <a href="/photos/new" class="btn btn-primary btn-block">
+          <i class="fa fa-fw fa-plus"></i>
+          Add Photo
+        </a>
+        <hr>
+      </div>
+    </div>
+    <% @photos.each do |photo| %>    
+    <div class="row mb-5">
+        <div class="col-md-8 offset-md-2">
+          <div class="card">
+            <div class="card-header">
+              <h4 class="card-title">
+                <a href="/users/<%= photo.user_id %>"><%= photo.user.username %></a>
+                <small>
+                  <%= " "+ time_ago_in_words(photo.created_at) + " ago" %>
+                </small>
+              </h4>
+            </div> <!-- card header -->
+      
+            <div class="card-body">
+                  <h4><%= photo.caption %></h4>
+                  <a href="/photos/<%= photo.id %>">
+                    <img src="<%= photo.image %>" class="img-fluid">
+                  </a>
+                   <% if photo.likes.pluck(:user_id).include? current_user.id %>
+                    <p class="card-text">
+                      carol and alice like this
+                      <a href="/delete_like/<%= photo.likes.where(user_id: current_user.id)[0].id %>" class="btn btn-link pull-right">
+                        <i class="fas fa-heart"></i> Unlike
+                      </a>
+                        </p>
+                    <% elsif photo.likes.pluck(:user_id).length == 0 %>
+                      <form action="/create_like" method="post">
+                        <input type="hidden" name="photo_id" value="<%= photo.id %>">
+                        <input type="hidden" name="user_id" value="<%= current_user.id %>">
+                          <p class="card-text">be the first to like this</p>
+                          <button class="btn btn-link pull-right">
+                            <i class="far fa-heart"></i>
+                            Like
+                          </button>
+                      </form>                    
+                    <% else %>
+                      <form action="/create_like" method="post">
+                        <input type="hidden" name="photo_id" value="<%= photo.id %>">
+                        <input type="hidden" name="user_id" value="<%= current_user.id %>">
+                          <p class="card-text"><%= photo.fans.pluck(:username).to_sentence %> like this</p>
+                          <button class="btn btn-link pull-right">
+                            <i class="far fa-heart"></i>
+                            Like
+                          </button>
+                      </form>
+                      <% end %>
+                  
+                  <% photo.comments.each do |comment| %>
+                  <div class="mt-1">
+                    <p>
+                      <%= comment.user.username %>
+                      <span>
+                        <small><%= time_ago_in_words(comment.created_at) + " ago" %></small>
+                      </span>
+                    </p>
+                    <p><%= comment.body %></p>
+                  </div>
+                  <% end %>
+                
+                <form action="/create_comment" method="post">
+                  
+                  <div class="form-group">
+                    <label for="body" class="sr-only">
+                      Body
+                    </label>
+                    <div class="input-group">
+                      <input type="text" id="body" name="body" class="form-control" placeholder="Add a comment..." required>
+
+                      <span class="input-group-append">
+                        <button class="btn btn-primary" type="submit">
+                          <i class="far fa-comment"></i>
+                          Add Comment
+                        </button>
+                      </span>
+                    </div><!-- input-group -->
+                  </div>  <!-- form-group -->
+                  
+                  <input type="hidden" name="photo_id" value="<%= photo.id %>">
+                  
+                  <input type="hidden" name="user_id" value="<%= current_user.id %>">                  
+                </form>
+
+                <% if (photo.user_id == current_user.id) %>
+                <div class="btn-group d-flex" role="group">
+                    <a href="/photos/<%= photo.id %>/edit" class="btn btn-warning w-100">
+                      <i class="fas fa-edit"></i>
+                      Edit
+                    </a>
+    
+                    <a href="/delete_photo/<%= photo.id %>" class="btn btn-danger w-100" rel="nofollow">
+                      <i class="fas fa-trash"></i>
+                      Delete
+                    </a>
+                </div> <!-- btn-group btn-group-justified --> 
+                <% end %>
+                
+          </div> <!-- card body -->
+          </div> <!-- card --> 
+        </div> <!-- col -->  
+    </div> <!--row -->
+    <% end %>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!--<div class="row mb-3">-->
+<!--  <div class="col-md-12">-->
+<!--    <h1>-->
+<!--      All photos-->
+<!--    </h1>-->
+
+<!--    <a href="/photos/new" class="btn btn-block btn-outline-secondary">-->
+<!--      Add a new photo-->
+<!--    </a>-->
+<!--  </div>-->
+<!--</div>-->
+
+
+<!--<hr>-->
+
+<!--<div class="row mb-3">-->
+<!--  <div class="col-md-12">-->
+<!--    <table class="table">-->
+<!--      <tr>-->
+<!--        <th>-->
+<!--          ID-->
+<!--        </th>-->
+
+<!--        <th>-->
+<!--          Caption-->
+<!--        </th>-->
+
+<!--        <th>-->
+<!--          Image-->
+<!--        </th>-->
+
+<!--        <th>-->
+<!--          User-->
+<!--        </th>-->
+
+<!--        <th>-->
+<!--          Created at-->
+<!--        </th>-->
+
+<!--        <th>-->
+<!--          Updated at-->
+<!--        </th>-->
+
+<!--        <th>-->
+<!--        </th>-->
+<!--      </tr>-->
+
+<!--      <% @photos.each do |photo| %>-->
+<!--      <tr>-->
+<!--        <td>-->
+<!--          <%= photo.id %>-->
+<!--        </td>-->
+
+<!--        <td>-->
+<!--          <%= photo.caption %>-->
+<!--        </td>-->
+
+<!--        <td>-->
+<!--          <%= photo.image %>-->
+<!--        </td>-->
+
+<!--        <td>-->
+<!--          <%= photo.user_id %>-->
+<!--        </td>-->
+
+<!--        <td>-->
+<!--          <%= time_ago_in_words(photo.created_at) %> ago-->
+<!--        </td>-->
+<!--        <td>-->
+<!--          <%= time_ago_in_words(photo.updated_at) %> ago-->
+<!--        </td>-->
+
+<!--        <td>-->
+<!--          <a href="/photos/<%= photo.id %>">-->
+<!--            Show details-->
+<!--          </a>-->
+<!--        </td>-->
+<!--      </tr>-->
+<!--      <% end %>-->
+<!--    </table>-->
+<!--  </div>-->
+<!--</div>-->
